@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <title>Vishal — Portfolio</title>
+
+  <!--
+    Single-file Sidebar Portfolio Template
+    - Save this file as index.html and open in browser.
+    - Replace placeholder images with your images.
+    - Well-commented for learning.
+  -->
+
+  <style>
+
+  html {
+  scroll-behavior: smooth;
+}
+
+
+
+  .skills-section {
+  padding: 50px 20px;
+  background: #111; /* dark background like your template */
+  color: #fff;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 40px;
+}
+
+.skills-container {
+  max-width: 800px;
+  margin: auto;
+}
+
+.skill-box {
+  margin-bottom: 25px;
+}
+
+.skill-title {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.skill-bar {
+  height: 8px;
+  background: #333;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.skill-per {
+  height: 8px;
+  background: orange; /* progress bar color */
+  width: 0;
+  border-radius: 6px;
+  position: relative;
+  transition: width 1.5s ease-in-out;
+}
+
+.skill-per::after {
+  content: attr(per);
+  position: absolute;
+  right: 0;
+  top: -25px;
+  font-size: 0.9rem;
+  color: #fff;
+}
+
+    /* =========================
+       Variables & Base Styles
+       ========================= */
+    :root{
+      --bg: #0f0f10;          /* dark background used in sidebar/hero (overridden for light mode) */
+      --panel-bg: #0f0f10;
+      --page-bg: #f6f6f7;     /* light page background */
+      --text: #111;           /* default text (light mode) */
+      --muted: #6b6b6b;
+      --accent: #ff375f;      /* default accent (skin 1) */
+      --accent-2: #ff375f;
+      --glass: rgba(255,255,255,0.04);
+      --blur: 8px;
+      --radius: 12px;
+      --sidebar-w: 260px;
+      --transition: 0.32s cubic-bezier(.2,.9,.2,1);
+      --max-width: 1100px;
+      --shadow: 0 10px 30px rgba(6,6,6,0.35);
+    }
+
+    /* Light-mode variable overrides */
+    :root.light {
+      --page-bg: #ffffff;
+      --panel-bg: #ffffff;
+      --text: #111;
+      --muted: #666;
+      --glass: rgba(0,0,0,0.03);
+      --shadow: 0 8px 26px rgba(6,6,6,0.08);
+    }
+
+    /* Dark-mode (applied by adding .dark to html/body) */
+    :root.dark {
+      --page-bg: #0b0b0c;
+      --panel-bg: #0b0b0c;
+      --text: #eee;
+      --muted: #bdbdbd;
+      --glass: rgba(255,255,255,0.02);
+      --shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    /* Many color skins will simply update --accent */
+    .skin-yellow  { --accent: #FFD700; }
+    .skin-red     { --accent: #FF4C4C; }
+    .skin-green   { --accent: #2ecc71; }
+    .skin-blue    { --accent: #2196F3; }
+    .skin-purple  { --accent: #9C27B0; }
+
+    /* =========================
+       General layout & resets
+       ========================= */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      background:var(--page-bg);
+      color:var(--text);
+      transition: background var(--transition), color var(--transition);
+      display:flex;
+      min-height:100vh;
+    }
+    a{color:inherit; text-decoration:none}
+    img{max-width:100%; display:block}
+    .container{max-width:var(--max-width); margin:0 auto; padding:24px}
+
+    /* =========================
+       SIDEBAR
+       ========================= */
+    .sidebar {
+      width:var(--sidebar-w);
+      min-width:var(--sidebar-w);
+      background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.25));
+      color:var(--text);
+      padding: 28px 18px;
+      position:fixed;
+      left:0;
+      top:0;
+      bottom:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+      border-right: 1px solid rgba(255,255,255,0.03);
+      transition: transform var(--transition), width var(--transition), background var(--transition);
+      z-index:40;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    /* small sidebar (collapsed) state for mobile triggered by .sidebar--collapsed */
+    .sidebar--collapsed { width:72px; min-width:72px; padding:18px 10px }
+
+    .brand{
+      display:flex; align-items:center; gap:12px; width:100%;
+    }
+    .brand .logo {
+      width:54px; height:54px; border-radius:12px;
+      background: linear-gradient(135deg,var(--accent), rgba(0,0,0,0.15));
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-weight:700; font-size:20px; box-shadow:0 6px 18px rgba(0,0,0,0.25);
+      
+    }
+    .brand h1{ font-size:18px; margin:0; letter-spacing:0.3px; font-weight:600 }
+
+    /* nav links */
+    nav.sidebar-nav{ width:100%; margin-top:8px; }
+    nav ul{list-style:none;padding:0;margin:0; display:flex; flex-direction:column; gap:6px}
+    nav li{ width:100% }
+    nav a{
+      display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px;
+      color:var(--text); font-weight:600; font-size:14px;
+      transition: background var(--transition), color var(--transition), transform .12s;
+    }
+    nav a .icon{ font-size:18px; width:28px; text-align:center }
+    nav a:hover{ background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); color:var(--accent) }
+
+    /* bottom area */
+    .sidebar .sidebar-bottom{ margin-top:auto; width:100%; display:flex; flex-direction:column; gap:8px; align-items:center }
+    .sidebar .small-txt{ font-size:12px; color:var(--muted) }
+
+    /* hamburger button (mobile) */
+    .hamburger{
+      display:none;
+      position:fixed;
+      left:14px; top:14px; z-index:80;
+      background:var(--accent);
+      border:none; color:#fff; padding:10px; border-radius:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.28);
+    }
+
+    /* =========================
+       MAIN CONTENT
+       ========================= */
+    main.main {
+      margin-left:var(--sidebar-w);
+      padding:36px 28px;
+      width: calc(100% - var(--sidebar-w));
+      transition: margin-left var(--transition), width var(--transition);
+      min-height:100vh;
+    }
+
+    /* adjust main when sidebar collapsed */
+    .sidebar--collapsed + main.main { margin-left:72px; width: calc(100% - 72px) }
+
+    /* SECTION common */
+    section {
+      padding:48px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+
+    /* HERO / INTRO */
+    .hero {
+      display:flex;
+      gap:32px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      min-height:70vh;
+    }
+    .hero-left{
+      flex:1 1 460px;
+      max-width:720px;
+    }
+    .hero h2{ font-size:22px; color:var(--muted); margin-bottom:8px }
+    .hero h1{ font-size:36px; margin-bottom:12px; line-height:1.05 }
+    .name-highlight{ color:var(--accent); font-weight:700; font-family: "Georgia", serif }
+    .typing-line{ font-weight:700; color:var(--accent); font-size:22px; min-height:30px }
+    .hero p{ color:var(--muted); max-width:70ch; margin-top:8px }
+
+    .hero-right{
+      flex:0 0 340px;
+      text-align:center;
+      padding:18px;
+      border-radius:14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow: var(--shadow);
+    }
+    .profile-photo{
+      width:260px; height:340px; object-fit:cover; border-radius:10px; display:block; margin:0 auto;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+      border: 6px solid rgba(255,255,255,0.02);
+    }
+    .cta-row{ margin-top:18px; display:flex; gap:12px; flex-wrap:wrap }
+    .btn{
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--accent); color:#fff; padding:10px 16px; border-radius:999px;
+      font-weight:700; border:none; cursor:pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    }
+    .btn.ghost{ background:transparent; color:var(--text); border:1px solid rgba(0,0,0,0.06) }
+
+    /* ABOUT */
+    .about-grid{ display:flex; gap:28px; flex-wrap:wrap; align-items:center }
+    .about-left{ flex:0 0 180px; text-align:center }
+    .about-left img{ width:160px; height:160px; object-fit:cover; border-radius:50%; border:6px solid var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.25) }
+    .about-right{ flex:1 }
+
+   /* Services Section Upgrade */
+.service-card{
+  padding:24px 18px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(0,0,0,0.04);
+  box-shadow:0 12px 36px rgba(0,0,0,0.25);
+  text-align:center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  cursor:default;
+}
+
+.service-card:hover{
+  transform: translateY(-10px) scale(1.05);
+  box-shadow:0 18px 48px rgba(0,0,0,0.35);
+  background:linear-gradient(180deg, var(--accent), rgba(255,255,255,0.05));
+}
+
+.service-icon{
+  font-size:40px;
+  margin-bottom:12px;
+  color:var(--accent);
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-icon{
+  transform: rotate(15deg) scale(1.2);
+}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:24px;
+}
+
+/* Fade-in animation when scrolling */
+.service-card{
+  opacity:0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.service-card.visible{
+  opacity:1;
+  transform: translateY(0);
+}
+
+/* Responsive tweaks */
+@media (max-width:720px){
+  .services-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+
+    /* PORTFOLIO */
+    .portfolio-filters{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px }
+    .filter-btn{ padding:8px 12px; border-radius:999px; background:transparent; border:1px solid rgba(0,0,0,0.06); cursor:pointer; font-weight:700 }
+    .filter-btn.active{ background:var(--accent); color:#fff }
+
+    .portfolio-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px }
+    .project-card{ border-radius:10px; overflow:hidden; background:var(--panel-bg); border:1px solid rgba(0,0,0,0.06); box-shadow:var(--shadow); transition: transform .22s }
+    .project-card:hover{ transform:translateY(-6px) }
+    .project-thumb{ width:100%; height:160px; object-fit:cover }
+    .project-body{ padding:12px }
+.contact-section {
+  padding: 60px 20px;
+  text-align: center;
+  background: #111;
+  color: #fff;
+}
+.contact-section h2 {
+  font-size: 36px;
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+.contact-section h2::after {
+  content: "";
+  width: 60px;
+  height: 3px;
+  background: #e91e63;
+  display: block;
+  margin: 8px auto 0;
+}
+.contact-section p {
+  color: #aaa;
+  margin-bottom: 40px;
+  font-size: 18px;
+}
+.contact-info {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+.info-box {
+  flex: 1 1 200px;
+  background: #1c1c1c;
+  padding: 20px;
+  border-radius: 12px;
+  transition: 0.3s;
+}
+.info-box:hover {
+  background: #e91e63;
+  color: #fff;
+  transform: translateY(-8px);
+}
+.info-box i {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: #e91e63;
+  transition: 0.3s;
+}
+.info-box:hover i {
+  color: #fff;
+}
+.info-box h4 {
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+.info-box p {
+  color: #ccc;
+  margin: 0;
+}
+.contact-form {
+  max-width: 700px;
+  margin: auto;
+}
+.contact-form input, .contact-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: #1c1c1c;
+  color: #fff;
+}
+.contact-form button {
+  background: #e91e63;
+  border: none;
+  padding: 14px 30px;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.contact-form button:hover {
+  background: #ff4081;
+  transform: scale(1.05);
+}
+
+
+    /* FOOTER */
+    footer{ text-align:center; padding:24px 0; color:var(--muted) }
+
+    /* =========================
+       Responsive behavior
+       ========================= */
+    @media (max-width: 980px){
+      .hero { flex-direction:column-reverse; align-items:flex-start }
+      .hero-right{ width:100% }
+      .profile-photo{ width:100%; height:340px }
+      .container{ padding:18px }
+      .contact-grid{ grid-template-columns:1fr }
+    }
+
+    @media (max-width: 720px){
+      body{ overflow-x:hidden }
+      .sidebar{ position:fixed; left:0; top:0; transform: translateX(0); transition: transform .28s }
+      /* Hide by default; show via .sidebar-open on body */
+      .sidebar { transform: translateX(-120%); box-shadow:none }
+      .sidebar--visible { transform: translateX(0) }
+      .hamburger{ display:inline-block }
+      main.main{ margin-left:0; padding:18px; width:100% }
+      .sidebar--collapsed + main.main { margin-left:0 }
+      .sidebar{ width:260px; min-width:260px } /* keep full width for reveal */
+    }
+
+    /* small niceties */
+    .muted { color: var(--muted) }
+    .small { font-size:13px }
+    .center { text-align:center }
+    .gap { gap:12px }
+
+    /* style switcher box (top-right) */
+    .style-switcher {
+      position:fixed; right:16px; top:16px; z-index:90;
+      background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.9));
+      padding:10px; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.08);
+    }
+    :root.dark .style-switcher { background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.35)); color:var(--text) }
+    .sw-title{ font-weight:700; font-size:13px; margin-bottom:6px }
+    .color-pallet{ display:flex; gap:8px }
+    .color-dot{ width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid rgba(0,0,0,0.06) }
+
+    /* helpful small text for code reading */
+    /* End of CSS */
+  </style>
+</head>
+<body class="skin-red"> <!-- choose initial skin class: skin-yellow, skin-red, skin-green, skin-blue, skin-purple -->
+  <!-- =========================
+       HAMBURGER (mobile)
+       ========================= -->
+  <button class="hamburger" aria-label="Open menu" id="hamburgerBtn">☰</button>
+
+  <!-- =========================
+       SIDEBAR
+       ========================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="logo"><img src="vishal logo.webp"/></div>
+      <div style="display:flex;flex-direction:column">
+        <h1 style="font-size:16px;margin:0">Vishal</h1>
+        <span class="small muted">Web Developer</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Sidebar navigation">
+      <ul>
+        <li><a href="#home"><span class="icon">🏠</span> <span class="label">Home</span></a></li>
+        <li><a href="#about"><span class="icon">👤</span> <span class="label">About</span></a></li>
+        <li>  <a href="#skills"> <span class="icon">💻</span> <span class="label">Skills</span></a></li>
+        <li><a href="#services"><span class="icon">⚙️</span> <span class="label">Services</span></a></li>
+        <li><a href="#portfolio"><span class="icon">💼</span> <span class="label">Portfolio</span></a></li>
+        <li><a href="#contact"><span class="icon">✉️</span> <span class="label">Contact</span></a></li>
+        
+        
+
+
+      </ul>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="small muted">Built with HTML5, CSS3 & JavaScript</div>
+      <div class="small muted">100% Responsive • Clean Code</div>
+    </div>
+  </aside>
+
+  <!-- =========================
+       MAIN CONTENT
+       ========================= -->
+  <main class="main">
+    <div class="container">
+
+      <!-- HERO / INTRO -->
+      <section id="home" class="hero">
+        <div class="hero-left">
+          <h2 class="muted">Hello, my name is <span class="name-highlight">Vishal</span></h2>
+          <h1>I'm a <span class="typing-line" id="typing"></span><span class="cursor">|</span></h1>
+          <p>I build modern, responsive websites and web apps with clean code and great UX. I focus on HTML5, CSS3 and JavaScript.</p>
+
+          <div class="cta-row">
+            <a class="btn" href="#portfolio">View My Work</a>
+            <a class="btn ghost" href="#contact">Contact Me</a>
+            <!-- Download CV (replace href with your resume file path) -->
+            <a class="btn" href="#" onclick="alert('Replace this link with your CV file path');">Download CV</a>
+          </div>
+
+          <div style="margin-top:18px" class="small muted">
+            <strong>Features:</strong> Live Style Switcher • 5 Color Skins • Light/Dark • Typing Animation
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <!-- Replace the src with your high-quality profile photo or the screenshot you uploaded -->
+          <img alt="Profile photo" class="profile-photo" src="WhatsApp Image 2025-08-26 at 19.50.42_a4c1b557.jpg">
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about">
+        <div class="container">
+          <h2>About Me</h2>
+          <div class="about-grid" style="margin-top:18px">
+            <div class="about-left">
+              <img alt="Profile" src="WhatsApp Image 2025-08-26 at 19.50.42_a4c1b557.jpg">
+            </div>
+            <div class="about-right">
+              <p class="muted">
+                I'm a Web Developer with experience building responsive websites and interactive user interfaces.
+                I enjoy turning ideas into clean, accessible digital experiences. My skills include HTML5, CSS3,
+                modern JavaScript, and basic backend integration.
+              </p>
+
+              <ul style="margin-top:12px">
+                <li><strong>Location:</strong> Your City, Country</li>
+                <li><strong>Education:</strong> BCA — Dr. Babasaheb Ambedkar Marathwada University</li>
+                <li><strong>Interests:</strong> Frontend development, UI design, performance optimization</li>
+              </ul>
+
+              <div style="margin-top:14px">
+                <a class="btn" href="#" onclick="alert('Attach your resume or link here')">Download Resume</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio — Theme Switcher</title>
+
+  <style>
+    /* -------------------
+       Theme variables
+       ------------------- */
+    :root {
+      --main-color: #ff4d4d;
+      --bg-color: #111;
+      --text-color: #fff;
+      --shadow: 0 6px 20px rgba(0,0,0,0.45);
+    }
+
+
+    /* skins (applied to body) */
+    .skin-red    { --main-color: #ff4d4d; }
+    .skin-yellow { --main-color: #ff9800; }
+    .skin-green  { --main-color: #4caf50; }
+    .skin-blue   { --main-color: #2196f3; }
+    .skin-purple { --main-color: #9c27b0; }
+
+    /* light / dark (applied to <html>) */
+    html.light {
+      --bg-color: #ffffff;
+      --text-color: #111111;
+    }
+    html.dark {
+      --bg-color: #111111;
+      --text-color: #ffffff;
+    }
+
+    /* -------------------
+       Base page styles
+       ------------------- */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      padding: 36px 24px;
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    a, h1, button { color: var(--main-color); transition: color 0.3s ease; }
+
+    main.demo {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    .card {
+      background: rgba(255,255,255,0.05);
+      padding: 18px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    /* --- Style Switcher Panel --- */
+    .style-switcher {
+      position: fixed;
+      top: 50%;
+      right: -260px;
+      transform: translateY(-50%) scale(0.95);
+      width: 240px;
+      background: rgba(34, 34, 34, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 20px;
+      border-radius: 14px 0 0 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transition: right 0.45s cubic-bezier(.68,-0.55,.27,1.55),
+                  transform 0.45s cubic-bezier(.68,-0.55,.27,1.55),
+                  opacity 0.3s ease;
+      opacity: 0;
+      z-index: 1000;
+    }
+    .style-switcher.open {
+      right: 0;
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+
+    /* Header */
+    .switcher-header {
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .switcher-header h3 {
+      font-size: 16px;
+      letter-spacing: 1px;
+      color: #fff;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 6px;
+    }
+
+    /* Section Titles */
+    .style-switcher h4 {
+      font-size: 13px;
+      margin: 12px 0 8px;
+      color: #ddd;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Color Dots */
+    .color-dot {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      margin: 6px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid rgba(255,255,255,0.4);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .color-dot:hover {
+      transform: scale(1.2) rotate(10deg);
+      box-shadow: 0 0 18px rgba(255,255,255,0.5);
+    }
+    .color-dot.active {
+      border-color: #fff;
+      box-shadow: 0 0 20px var(--main-color);
+      animation: pulse 1.2s infinite alternate;
+    }
+    @keyframes pulse {
+      from { box-shadow: 0 0 10px var(--main-color); }
+      to   { box-shadow: 0 0 22px var(--main-color); }
+    }
+
+    /* Mode Buttons */
+    .mode-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.25s ease;
+    }
+    .mode-btn:hover {
+      transform: translateY(-2px) scale(1.05);
+      background: rgba(255,255,255,0.2);
+    }
+    .mode-btn.active {
+      background: var(--main-color);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+
+    /* Toggle Button */
+    .toggle-btn {
+      position: fixed;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--main-color);
+      color: #fff;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.45);
+      transition: transform 0.4s cubic-bezier(.68,-0.55,.27,1.55),
+                  background 0.3s ease;
+      z-index: 1100;
+    }
+    .toggle-btn:hover {
+      transform: translateY(-50%) rotate(90deg) scale(1.1);
+      background: #333;
+    }
+    .toggle-btn.open {
+      transform: translateY(-50%) rotate(180deg) scale(1.1);
+    }
+
+    /* Mobile-friendly bottom drawer */
+    @media (max-width: 768px) {
+      .style-switcher {
+        top: auto;
+        bottom: -260px;
+        right: 50%;
+        transform: translateX(50%) scale(0.95);
+        border-radius: 14px 14px 0 0;
+        width: 90%;
+        max-width: 340px;
+        transition: bottom 0.4s ease, transform 0.4s ease, opacity 0.3s ease;
+      }
+      .style-switcher.open {
+        bottom: 0;
+        transform: translateX(50%) scale(1);
+      }
+      .toggle-btn {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating Toggle -->
+  <button class="toggle-btn" aria-label="Open theme switcher" aria-expanded="false">⚙️</button>
+
+  <!-- 🎨 Style Switcher -->
+  <aside class="style-switcher" aria-hidden="true">
+    <div class="switcher-header">
+      <h3>🎨 Theme Settings</h3>
+    </div>
+
+    <div class="switcher-row">
+      <h4>Theme Colors</h4>
+      <div class="colors">
+        <span class="color-dot" tabindex="0" data-skin="skin-red"    title="Red"    style="background:#ff4d4d"></span>
+        <span class="color-dot" tabindex="0" data-skin="skin-yellow" title="Orange" style="background:#ff9800"></span>
+        <span class="color-dot" tabindex="0" data-skin="skin-green"  title="Green"  style="background:#4caf50"></span>
+        <span class="color-dot" tabindex="0" data-skin="skin-blue"   title="Blue"   style="background:#2196f3"></span>
+        <span class="color-dot" tabindex="0" data-skin="skin-purple" title="Purple" style="background:#9c27b0"></span>
+      </div>
+    </div>
+
+    <div class="switcher-row">
+      <h4>Theme Mode</h4>
+      <div class="modes">
+        <button id="lightBtn" class="mode-btn">☀ Light</button>
+        <button id="darkBtn" class="mode-btn">🌙 Dark</button>
+      </div>
+    </div>
+
+    <div class="switcher-row">
+      <h4>Reset</h4>
+      <button id="resetBtn" class="mode-btn">🔄 Reset Default</button>
+    </div>
+  </aside>
+
+ 
+
+  <script>
+    (function () {
+      const switcher = document.querySelector('.style-switcher');
+      const toggleBtn = document.querySelector('.toggle-btn');
+      const colorDots = Array.from(document.querySelectorAll('.color-dot'));
+      const lightBtn = document.getElementById('lightBtn');
+      const darkBtn = document.getElementById('darkBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const htmlEl = document.documentElement;
+      const bodyEl = document.body;
+
+      // Helpers
+      function setSkin(skinName) {
+        bodyEl.classList.remove('skin-red','skin-yellow','skin-green','skin-blue','skin-purple');
+        bodyEl.classList.add(skinName);
+        localStorage.setItem('selectedSkin', skinName);
+        colorDots.forEach(d => d.classList.toggle('active', d.dataset.skin === skinName));
+        openSwitcher(false); // auto-close
+      }
+      function setMode(mode) {
+        htmlEl.classList.remove('light','dark');
+        htmlEl.classList.add(mode);
+        localStorage.setItem('themeMode', mode);
+        lightBtn.classList.toggle('active', mode === 'light');
+        darkBtn.classList.toggle('active', mode === 'dark');
+        openSwitcher(false); // auto-close
+      }
+
+      // Load saved preferences
+      const savedSkin = localStorage.getItem('selectedSkin') || 'skin-red';
+      const savedMode = localStorage.getItem('themeMode') || 'dark';
+      setSkin(savedSkin);
+      setMode(savedMode);
+
+      // Toggle open/close
+      function openSwitcher(open = true) {
+        switcher.classList.toggle('open', open);
+        toggleBtn.classList.toggle('open', open);
+        const expanded = open ? 'true' : 'false';
+        toggleBtn.setAttribute('aria-expanded', expanded);
+        switcher.setAttribute('aria-hidden', (!open).toString());
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        const isOpen = switcher.classList.contains('open');
+        openSwitcher(!isOpen);
+      });
+
+      // Keyboard support for toggle
+      toggleBtn.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          ev.preventDefault();
+          toggleBtn.click();
+        }
+      });
+
+      // Close when clicking outside
+      document.addEventListener('click', (ev) => {
+        if (!switcher.contains(ev.target) && !toggleBtn.contains(ev.target) && switcher.classList.contains('open')) {
+          openSwitcher(false);
+        }
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', (ev) => {
+        if (ev.key === 'Escape' && switcher.classList.contains('open')) {
+          openSwitcher(false);
+        }
+      });
+
+      // Color selection
+      colorDots.forEach(dot => {
+        dot.addEventListener('click', () => setSkin(dot.dataset.skin));
+        dot.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            setSkin(dot.dataset.skin);
+          }
+        });
+      });
+
+      // Mode buttons
+      lightBtn.addEventListener('click', () => setMode('light'));
+      darkBtn.addEventListener('click', () => setMode('dark'));
+
+      // Reset
+      resetBtn.addEventListener('click', () => {
+        setSkin('skin-red');
+        setMode('dark');
+      });
+    })();
+  </script>
+</body>
+</html>
+
+
+      <!-- About Section End -->
+
+<!-- ✅ Add Skills Section here -->
+<section id="skills" class="skills-section">
+  <h2 class="section-title">My Skills</h2>
+  <div class="skills-container">
+
+    <div class="skill-box">
+      <span class="skill-title">HTML</span>
+      <div class="skill-bar">
+        <div class="skill-per" per="95%" style="max-width:95%"></div>
+      </div>
+    </div>
+
+    <div class="skill-box">
+      <span class="skill-title">CSS</span>
+      <div class="skill-bar">
+        <div class="skill-per" per="90%" style="max-width:90%"></div>
+      </div>
+    </div>
+
+    <div class="skill-box">
+      <span class="skill-title">JavaScript</span>
+      <div class="skill-bar">
+        <div class="skill-per" per="75%" style="max-width:75%"></div>
+      </div>
+    </div>
+
+    <div class="skill-box">
+      <span class="skill-title">React</span>
+      <div class="skill-bar">
+        <div class="skill-per" per="66%" style="max-width:66%"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- ✅ Skills Section End -->
+
+<!-- Contact Section Start -->
+
+
+    <section id="services">
+  <div class="container">
+    <h2>Services</h2>
+    <div class="services-grid" style="margin-top:18px">
+      <div class="service-card">
+        <div class="service-icon">⚙️</div>
+        <h4>Responsive Web Design</h4>
+        <p class="muted">Pixel-perfect layouts that work on any device, fully responsive and mobile-friendly.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">💻</div>
+        <h4>Frontend Development</h4>
+        <p class="muted">Modern JavaScript (ES6+), React components, and performance-aware code for smooth UX.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🎨</div>
+        <h4>UI / UX Design</h4>
+        <p class="muted">Intuitive interfaces, micro-interactions, and aesthetically pleasing designs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+      <!-- PORTFOLIO -->
+      <section id="portfolio">
+        <div class="container">
+          <h2>Portfolio</h2>
+
+          <!-- simple category filters -->
+          <div class="portfolio-filters" style="margin-top:14px">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="web">Web</button>
+            <button class="filter-btn" data-filter="design">Design</button>
+            <button class="filter-btn" data-filter="app">App</button>
+          </div>
+
+          <div class="portfolio-grid" id="portfolioGrid" style="margin-top:12px">
+            <!-- card 1 -->
+            <article class="project-card" data-cat="web">
+              <img class="project-thumb" src="hotel-Hotel-Hd-Beach-Resort-F121062_ef65e991435.webphotel-Hotel-Hd-Beach-Resort-F121062_ef65e991435.webp" alt="Project 1">
+              <div class="project-body">
+                <h4>Project One</h4>
+                <p class="muted small">A responsive website built with modern HTML & CSS.</p>
+                <div style="margin-top:8px">
+                  <a class="btn" href="#" onclick="alert('Open Live Demo')">Live</a>
+                  <a class="btn ghost" href="#" onclick="alert('Open GitHub')">Code</a>
+                </div>
+              </div>
+            </article>
+
+            <!-- card 2 -->
+            <article class="project-card" data-cat="design">
+              <img class="project-thumb" src="C:\Users\v8990\OneDrive\Desktop\vishal potfolio\WhatsApp Image 2025-08-26 at 19.50.42_a4c1b557.jpgWhatsApp Image 2025-08-26 at 19.50.42_a4c1b557.jpg" alt="Project 2">
+              <div class="project-body">
+                <h4>Project Two</h4>
+                <p class="muted small">A UI/UX concept and prototype design.</p>
+              </div>
+            </article>
+
+            <!-- card 3 -->
+            <article class="project-card" data-cat="app">
+              <img class="project-thumb" src="https://via.placeholder.com/800x400.png?text=Project+3" alt="Project 3">
+              <div class="project-body">
+                <h4>Project Three</h4>
+                <p class="muted small">A small frontend app with interactivity.</p>
+              </div>
+            </article>
+
+            <!-- Add more projects similarly -->
+          </div>
+        </div>
+      </section>
+
+     <!-- Contact Section -->
+<section class="contact-section" id="contact">
+  <h2>Contact Me</h2>
+  <p>Have You Any Questions? <br> I'm at your service</p>
+
+  <div class="contact-info">
+    <div class="info-box">
+      <i class="fa-solid fa-phone"></i>
+      <h4>Call Us On</h4>
+      <p>+92 349086545</p>
+    </div>
+    <div class="info-box">
+      <i class="fa-solid fa-location-dot"></i>
+      <h4>Office</h4>
+      <p>44 Street, Islamabad</p>
+    </div>
+    <div class="info-box">
+      <i class="fa-solid fa-envelope"></i>
+      <h4>Email</h4>
+      <p>info@gmail.com</p>
+    </div>
+    <div class="info-box">
+      <i class="fa-solid fa-globe"></i>
+      <h4>Website</h4>
+      <p>Mo-designer.com</p>
+    </div>
+  </div>
+
+  <h3 style="color:#e91e63; margin-bottom:10px;">Send Me An Email</h3>
+  <p style="margin-bottom:20px;">I'm very responsive to messages</p>
+
+  <form class="contact-form">
+    <input type="text" placeholder="Name" required>
+    <input type="email" placeholder="Email" required>
+    <input type="text" placeholder="Subject" required>
+    <textarea rows="5" placeholder="Message" required></textarea>
+    <button type="submit">Send Message</button>
+  </form>
+</section>
+
+
+      <!-- FOOTER -->
+      <footer>
+        <div class="container center small muted">© <span id="year"></span> Vishal. All Rights Reserved.</div>
+      </footer>
+    </div>
+  </main>
+
+  <!-- =========================
+       STYLE SWITCHER (LIVE)
+       ========================= -->
+  <div class="style-switcher" role="region" aria-label="Style switcher">
+    <div class="sw-title">Style Switcher</div>
+    <div class="color-pallet" style="margin-bottom:8px">
+      <div class="color-dot" style="background:#FFD700" title="Yellow" data-skin="skin-yellow"></div>
+      <div class="color-dot" style="background:#FF4C4C" title="Red" data-skin="skin-red"></div>
+      <div class="color-dot" style="background:#2ecc71" title="Green" data-skin="skin-green"></div>
+      <div class="color-dot" style="background:#2196F3" title="Blue" data-skin="skin-blue"></div>
+      <div class="color-dot" style="background:#9C27B0" title="Purple" data-skin="skin-purple"></div>
+    </div>
+
+    <div style="display:flex; gap:8px; align-items:center; justify-content:space-between">
+      <button id="lightBtn" class="btn ghost" style="padding:8px 10px">Light</button>
+      <button id="darkBtn" class="btn" style="padding:8px 10px; background:var(--accent)">Dark</button>
+    </div>
+  </div>
+
+  <!-- =========================
+       JavaScript functionality
+       ========================= -->
+  <script>
+
+
+
+
+  // Animate skill bars on scroll
+const skillPers = document.querySelectorAll(".skill-per");
+
+window.addEventListener("scroll", () => {
+  skillPers.forEach(skill => {
+    let value = skill.getAttribute("per");
+    skill.style.width = value;
+  });
+});
+
+
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener("click", function(e) {
+      e.preventDefault();
+      document.querySelector(this.getAttribute("href")).scrollIntoView({
+        behavior: "smooth"
+      });
+    });
+  });
+
+
+
+
+// Animate services cards on scroll
+const serviceCards = document.querySelectorAll('.service-card');
+
+function revealServices() {
+  const triggerBottom = window.innerHeight * 0.85;
+
+  serviceCards.forEach(card => {
+    const cardTop = card.getBoundingClientRect().top;
+
+    if(cardTop < triggerBottom){
+      card.classList.add('visible');
+    }
+  });
+}
+
+window.addEventListener('scroll', revealServices);
+window.addEventListener('load', revealServices);
+
+    /************************************************************************
+      Small utility helpers & initial UI setup
+    *************************************************************************/
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Root element used for switching theme classes
+    const rootEl = document.documentElement;
+
+    // Apply default theme mode (dark-like sidebar style) and enable skins
+    // You can change to 'light' string if you want light-by-default.
+    const defaultMode = 'dark'; // 'light' or 'dark'
+    const defaultSkin = 'skin-red'; // match class names declared in CSS
+
+    // Apply initial classes
+    rootEl.classList.add(defaultMode);
+    document.body.classList.add(defaultSkin);
+
+    /************************************************************************
+      Typing animation for hero typing-line
+      - simple type/erase loop
+    *************************************************************************/
+    (function initTyping(){
+      const el = document.getElementById('typing');
+      const phrases = ["Web Designer", "Front-end Developer", "JavaScript Enthusiast", "UI/UX Fan"];
+      let phraseIndex = 0, charIndex = 0, forward = true;
+
+      function tick(){
+        const current = phrases[phraseIndex];
+        if(forward){
+          charIndex++;
+          if(charIndex >= current.length){
+            forward = false;
+            setTimeout(tick, 1400);
+            el.textContent = current;
+            return;
+          }
+        } else {
+          charIndex--;
+          if(charIndex <= 0){
+            forward = true;
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+          }
+        }
+        el.textContent = current.slice(0, charIndex);
+        setTimeout(tick, forward ? 80 : 40);
+      }
+      tick();
+    })();
+
+    /************************************************************************
+      Mobile hamburger + sidebar show/hide
+    *************************************************************************/
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+
+    hamburgerBtn.addEventListener('click', function(){
+      // toggle a visible class on the sidebar (for small screens)
+      // we use body.classList to avoid breaking CSS cascade for wider screens
+      document.body.classList.toggle('sidebar--visible');
+      // Because CSS uses .sidebar--visible, toggle it on the sidebar
+      sidebar.classList.toggle('sidebar--visible');
+    });
+
+    // Close sidebar on navigation click (mobile friendly)
+    sidebar.querySelectorAll('a').forEach(a=>{
+      a.addEventListener('click', ()=>{
+        if(window.innerWidth <= 720){
+          sidebar.classList.remove('sidebar--visible');
+        }
+      });
+    });
+
+    /************************************************************************
+      Style switcher (live color skins)
+    *************************************************************************/
+    const colorDots = document.querySelectorAll('.color-dot');
+    colorDots.forEach(dot=>{
+      dot.addEventListener('click', () => {
+        // remove any existing skin classes with prefix 'skin-'
+        document.body.classList.forEach(c=>{
+          if(c.startsWith('skin-')) document.body.classList.remove(c);
+        });
+        // add chosen skin
+        document.body.classList.add(dot.dataset.skin);
+      });
+    });
+
+    // Light / Dark toggle buttons
+    document.getElementById('lightBtn').addEventListener('click', ()=>{
+      rootEl.classList.remove('dark');
+      rootEl.classList.add('light');
+    });
+    document.getElementById('darkBtn').addEventListener('click', ()=>{
+      rootEl.classList.remove('light');
+      rootEl.classList.add('dark');
+    });
+
+    /************************************************************************
+      Portfolio filters (simple data attribute filtering)
+    *************************************************************************/
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const projectCards = document.querySelectorAll('.project-card');
+
+    filterBtns.forEach(btn=>{
+      btn.addEventListener('click', () => {
+        // active state
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+        projectCards.forEach(card=>{
+          if(filter === 'all' || card.dataset.cat === filter){
+            card.style.display = ''; // show (default display)
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    /************************************************************************
+      Contact form (frontend only)
+      - You can connect this to an email service or backend endpoint.
+    *************************************************************************/
+    function sendMessage(){
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      if(!name || !email || !message){
+        alert('Please fill all fields');
+        return;
+      }
+
+      // simulate sending
+      alert('Thanks ' + name + '! (This demo does not actually send email.)');
+
+      // clear the form
+      document.getElementById('contactForm').reset();
+    }
+
+    /************************************************************************
+      Accessibility & small improvements
+    *************************************************************************/
+    // close sidebar when clicking outside on mobile
+    document.addEventListener('click', (e) => {
+      if(window.innerWidth <= 720){
+        const isClickInside = sidebar.contains(e.target) || hamburgerBtn.contains(e.target);
+        if(!isClickInside && sidebar.classList.contains('sidebar--visible')){
+          sidebar.classList.remove('sidebar--visible');
+        }
+      }
+    });
+
+    // keyboard escape to close sidebar on mobile
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && sidebar.classList.contains('sidebar--visible')){
+        sidebar.classList.remove('sidebar--visible');
+      }
+    });
+
+    /************************************************************************
+      Optional: you can persist theme & skin in localStorage (uncomment to enable)
+    *************************************************************************/
+    /*
+    // Save mode
+    function saveTheme(){
+      localStorage.setItem('portfolio-mode', rootEl.classList.contains('dark') ? 'dark' : 'light');
+      const skin = Array.from(document.body.classList).find(c=>c.startsWith('skin-'));
+      if(skin) localStorage.setItem('portfolio-skin', skin);
+    }
+    // Load
+    const savedMode = localStorage.getItem('portfolio-mode');
+    const savedSkin = localStorage.getItem('portfolio-skin');
+    if(savedMode) { rootEl.classList.remove('light','dark'); rootEl.classList.add(savedMode) }
+    if(savedSkin) { document.body.classList.add(savedSkin) }
+    // call saveTheme() whenever you change (add to toggles)
+    */
+
+  </script>
+</body>
+</html>
